@@ -12,6 +12,7 @@ const SearchBar = require('./SearchBar');
 const NavMenu = require('./NavMenu');
 const styles = require('./styles');
 const { t } = require('i18next');
+const SiteInformationDialog = require('./dialog');
 
 const HorizontalNavBar = React.memo(({ className, route, query, title, backButton, searchBar, addonsButton, fullscreenButton, navMenu, ...props }) => {
     const backButtonOnClick = React.useCallback(() => {
@@ -25,6 +26,12 @@ const HorizontalNavBar = React.memo(({ className, route, query, title, backButto
             {children}
         </Button>
     ), []);
+
+    const [routeState, setRouteState] = React.useState(route);
+    React.useEffect(() => {
+        setRouteState(route);
+    }, [route]);
+
     return (
         <nav {...props} className={classnames(className, styles['horizontal-nav-bar-container'])}>
             {
@@ -41,6 +48,14 @@ const HorizontalNavBar = React.memo(({ className, route, query, title, backButto
                         />
                     </div>
             }
+
+            {
+                routeState === 'board' ?
+                    <div className='lg:block hidden font-medium text-white text-opacity-60 text-3xl left-32 absolute'>Scheduled anime</div>
+                    :
+                    null
+            }
+
             {
                 typeof title === 'string' && title.length > 0 ?
                     <h2 className={styles['title']}>{title}</h2>
@@ -54,14 +69,7 @@ const HorizontalNavBar = React.memo(({ className, route, query, title, backButto
                     null
             }
             <div className={styles['buttons-container']}>
-                {
-                    addonsButton ?
-                        <Button className={styles['button-container']} href={'#/addons'} title={t('ADDONS')} tabIndex={-1}>
-                            <Icon className={styles['icon']} name={'addons-outline'} />
-                        </Button>
-                        :
-                        null
-                }
+                <SiteInformationDialog/>
                 {
                     !isIOSPWA && fullscreenButton ?
                         <Button className={styles['button-container']} title={fullscreen ? t('EXIT_FULLSCREEN') : t('ENTER_FULLSCREEN')} tabIndex={-1} onClick={fullscreen ? exitFullscreen : requestFullscreen}>

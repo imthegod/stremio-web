@@ -81,6 +81,7 @@ const Discover = ({ urlParams, queryParams }) => {
         closeAddonModal();
         setSelectedMetaItemIndex(0);
     }, [discover.selected]);
+
     return (
         <MainNavBars className={styles['discover-container']} route={'discover'}>
             <div className={styles['discover-content']}>

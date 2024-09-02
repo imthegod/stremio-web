@@ -261,10 +261,7 @@ const Intro = ({ queryParams }) => {
                     <Image className={styles['logo']} src={require('/images/logo.png')} alt={' '} />
                 </div>
                 <div className={styles['title-container']}>
-                    Freedom to Stream
-                </div>
-                <div className={styles['slogan-container']}>
-                    All the Video Content You Enjoy in One Place
+                    Freedom to Stream Anime (non-official fork)
                 </div>
             </div>
             <div className={styles['content-container']}>

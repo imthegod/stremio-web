@@ -8,10 +8,7 @@ const styles = require('./styles');
 
 const TABS = [
     { id: 'board', label: 'Board', icon: 'home', href: '#/' },
-    { id: 'discover', label: 'Discover', icon: 'discover', href: '#/discover' },
-    { id: 'library', label: 'Library', icon: 'library', href: '#/library' },
-    { id: 'addons', label: 'ADDONS', icon: 'addons', href: '#/addons' },
-    { id: 'settings', label: 'SETTINGS', icon: 'settings', href: '#/settings' },
+    { id: 'discover', label: 'Discover', icon: 'discover', href: '#/discover/https%3A%2F%2Fanime-kitsu.strem.fun%2Fmanifest.json/anime/kitsu-anime-trending?' },
 ];
 
 const MainNavBars = React.memo(({ className, route, query, children }) => {

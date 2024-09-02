@@ -1,5 +1,3 @@
-// Copyright (C) 2017-2023 Smart code 203358507
-
 const React = require('react');
 const ReactIs = require('react-is');
 const PropTypes = require('prop-types');
@@ -11,8 +9,12 @@ const useTranslate = require('stremio/common/useTranslate');
 const MetaRowPlaceholder = require('./MetaRowPlaceholder');
 const styles = require('./styles');
 
-const MetaRow = ({ className, title, catalog, message, itemComponent, notifications }) => {
+const MetaRow = React.forwardRef(({ className, mainPage = false, title, catalog, message, itemComponent, notifications }, ref) => {
     const t = useTranslate();
+    if (catalog.type === 'movie' || catalog.type === 'channel') {
+        return null;
+    }
+    title = catalog.title;
 
     const catalogTitle = React.useMemo(() => {
         return title ?? t.catalogTitle(catalog);
@@ -26,12 +28,19 @@ const MetaRow = ({ className, title, catalog, message, itemComponent, notificati
         return catalog?.deepLinks?.discover ?? catalog?.deepLinks?.library;
     }, [catalog]);
 
+    const highlighted = React.useMemo(() => {
+        const now = new Date();
+        const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' });
+        return currentDay === catalog.title;
+    }, [catalog]);
+
     return (
-        <div className={classnames(className, styles['meta-row-container'])}>
+        <div ref={ref}
+            className={classnames(className, styles['meta-row-container'])}>
             <div className={styles['header-container']}>
                 {
-                    typeof catalogTitle === 'string' && catalogTitle.length > 0 ?
-                        <div className={styles['title-container']} title={catalogTitle}>{catalogTitle}</div>
+                    typeof catalogTitle === 'string' && catalogTitle.length > 0 && !catalogTitle.includes('Part') ?
+                        <div style={{ color: highlighted ? '#7b5bf5' : '' }} className={styles['title-container']} title={catalogTitle}>{catalogTitle}</div>
                         :
                         null
                 }
@@ -58,29 +67,32 @@ const MetaRow = ({ className, title, catalog, message, itemComponent, notificati
                                         key: index,
                                         className: classnames(styles['meta-item'], styles['poster-shape-poster'], styles[`poster-shape-${item.posterShape}`]),
                                         notifications,
+                                        mainPage,
                                     });
                                 })
                                 :
                                 null
                         }
-                        {Array(Math.max(0, CONSTANTS.CATALOG_PREVIEW_SIZE - items.length)).fill(null).map((_, index) => (
+                        {items.length < CONSTANTS.CATALOG_PREVIEW_SIZE - 5 && Array(Math.max(0, CONSTANTS.CATALOG_PREVIEW_SIZE - items.length)).fill(null).map((_, index) => (
                             <div key={index} className={classnames(styles['meta-item'], styles['poster-shape-poster'])} />
                         ))}
                     </div>
             }
         </div>
     );
-};
+});
 
 MetaRow.Placeholder = MetaRowPlaceholder;
 
 MetaRow.propTypes = {
+    mainPage: PropTypes.bool,
     className: PropTypes.string,
     title: PropTypes.string,
     message: PropTypes.string,
     catalog: PropTypes.shape({
         id: PropTypes.string,
         name: PropTypes.string,
+        title: PropTypes.string,
         type: PropTypes.string,
         addon: PropTypes.shape({
             manifest: PropTypes.shape({
@@ -106,6 +118,7 @@ MetaRow.propTypes = {
     }),
     itemComponent: PropTypes.elementType,
     notifications: PropTypes.object,
+    //boardCatalogs: PropTypes.array
 };
 
 module.exports = MetaRow;

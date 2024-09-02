@@ -13,9 +13,17 @@ const useBinaryState = require('stremio/common/useBinaryState');
 const { ICON_FOR_TYPE } = require('stremio/common/CONSTANTS');
 const styles = require('./styles');
 
-const MetaItem = React.memo(({ className, type, name, poster, posterShape, posterChangeCursor, progress, newVideos, options, deepLinks, dataset, optionOnSelect, onDismissClick, onPlayClick, watched, ...props }) => {
+const MetaItem = React.memo(({ className, mainPage = false, iconType, name, poster, posterShape, posterChangeCursor, progress, newVideos, options, deepLinks, dataset, optionOnSelect, onDismissClick, onPlayClick, watched, ...props }) => {
     const { t } = useTranslation();
     const [menuOpen, onMenuOpen, onMenuClose] = useBinaryState(false);
+
+    const itemOnClick = React.useCallback((event) => {
+        event.preventDefault();
+        const { id, type } = props;
+        if(id && type) window.location.hash = `/detail/${type}/${id}`;
+        else window.location.hash = `/search?search=${name}`;
+    }, []);
+
     const href = React.useMemo(() => {
         return deepLinks ?
             typeof deepLinks.player === 'string' ?
@@ -55,15 +63,28 @@ const MetaItem = React.memo(({ className, type, name, poster, posterShape, poste
     const renderPosterFallback = React.useCallback(() => (
         <Icon
             className={styles['placeholder-icon']}
-            name={ICON_FOR_TYPE.has(type) ? ICON_FOR_TYPE.get(type) : ICON_FOR_TYPE.get('other')}
+            name={ICON_FOR_TYPE.has(iconType) ? ICON_FOR_TYPE.get(iconType) : ICON_FOR_TYPE.get('other')}
         />
-    ), [type]);
+    ), [iconType]);
     const renderMenuLabelContent = React.useCallback(() => (
         <Icon className={styles['icon']} name={'more-vertical'} />
     ), []);
+
+    let notYetAired = true;
+    if (mainPage) {
+        const now = new Date();
+        const [hours, minutes] = props.released.split(':');
+        const releaseDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
+
+        notYetAired = props?.today && now < releaseDate;
+    }
+
     return (
-        <Button title={name} href={href} {...filterInvalidDOMProps(props)} className={classnames(className, styles['meta-item-container'], styles['poster-shape-poster'], styles[`poster-shape-${posterShape}`], { 'active': menuOpen })} onClick={metaItemOnClick}>
-            <div className={classnames(styles['poster-container'], { 'poster-change-cursor': posterChangeCursor })}>
+        <Button title={name} href={href} {...filterInvalidDOMProps(props)} className={classnames(className, styles['meta-item-container'], styles['poster-shape-poster'], styles[`poster-shape-${posterShape}`], { 'active': menuOpen })} onClick={mainPage ? itemOnClick : metaItemOnClick}>
+            <div style={{
+                scale: props.highlighted ? '1.1' : '',
+                opacity: mainPage && notYetAired ? '0.5' : ''
+            }} className={classnames(styles['poster-container'], { 'poster-change-cursor': posterChangeCursor })}>
                 {
                     onDismissClick ?
                         <div title={t('LIBRARY_RESUME_DISMISS')} className={styles['dismiss-icon-layer']} onClick={onDismissClick}>
@@ -156,8 +177,9 @@ const MetaItem = React.memo(({ className, type, name, poster, posterShape, poste
 MetaItem.displayName = 'MetaItem';
 
 MetaItem.propTypes = {
+    mainPage: PropTypes.bool,
     className: PropTypes.string,
-    type: PropTypes.string,
+    iconType: PropTypes.string,
     name: PropTypes.string,
     poster: PropTypes.string,
     posterShape: PropTypes.oneOf(['poster', 'landscape', 'square']),
@@ -175,7 +197,12 @@ MetaItem.propTypes = {
     onDismissClick: PropTypes.func,
     onPlayClick: PropTypes.func,
     onClick: PropTypes.func,
-    watched: PropTypes.bool
+    watched: PropTypes.bool,
+    highlighted: PropTypes.bool,
+    released: PropTypes.string,
+    today: PropTypes.bool,
+    customCatalog: PropTypes.any,
+    id: PropTypes.string
 };
 
 module.exports = MetaItem;

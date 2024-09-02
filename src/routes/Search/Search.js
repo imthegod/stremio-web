@@ -15,6 +15,7 @@ const THRESHOLD = 100;
 const Search = ({ queryParams }) => {
     const { t } = useTranslation();
     const [search, loadSearchRows] = useSearch(queryParams);
+
     const query = React.useMemo(() => {
         return search.selected !== null ?
             search.selected.extra.reduceRight((query, [name, value]) => {
@@ -37,12 +38,21 @@ const Search = ({ queryParams }) => {
         if (range === null) {
             return;
         }
-
         loadSearchRows(range);
     }, [search.catalogs]);
     const onScroll = React.useCallback(debounce(onVisibleRangeChange, 250), [onVisibleRangeChange]);
+
     React.useLayoutEffect(() => {
         onVisibleRangeChange();
+        const newCatalogs = [];
+        if (search.catalogs) {
+            for (let i = 0; i< search.catalogs.length; i++) {
+                const tempType = search.catalogs[i].type;
+                if(tempType !== 'movie' && tempType !== 'channel') {
+                    newCatalogs.push(search.catalogs[i]);
+                }
+            }
+        }
     }, [search.catalogs, onVisibleRangeChange]);
     return (
         <MainNavBars className={styles['search-container']} route={'search'} query={query}>

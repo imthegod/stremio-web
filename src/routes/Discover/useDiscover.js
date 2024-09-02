@@ -69,6 +69,7 @@ const useDiscover = (urlParams, queryParams) => {
         };
     }, [urlParams, queryParams]);
     const discover = useModelState({ model: 'discover', action, map, deps: ['ctx'] });
+    // console.log(discover)
     return [discover, loadNextPage];
 };
 

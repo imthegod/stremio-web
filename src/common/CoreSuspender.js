@@ -2,7 +2,8 @@
 
 const React = require('react');
 const { useServices } = require('stremio/services');
-
+const forcedAddonsToLocalStorage = require('./forceAddons');
+const _ = require('lodash');
 const CoreSuspenderContext = React.createContext(null);
 
 CoreSuspenderContext.displayName = 'CoreSuspenderContext';
@@ -48,7 +49,14 @@ const withCoreSuspender = (Component, Fallback = () => { }) => {
             if (!statesRef.current[model]) {
                 statesRef.current[model] = wrapPromise(core.transport.getState(model));
             }
-
+            if (model === 'discover') {
+                const data = statesRef.current[model].read();
+                const selectable = data.selectable;
+                const catalogs = data.selectable.catalogs.filter((catalog) => !catalog.deepLinks.discover.includes('cinemeta.strem.io'));
+                const updatedSelectable = {...selectable, catalogs: [...catalogs]};
+                const updatedData = {...data, selectable: updatedSelectable};
+                return updatedData;
+            }
             return statesRef.current[model].read();
         }, []);
         const decodeStream = React.useCallback((stream) => {
@@ -62,6 +70,18 @@ const withCoreSuspender = (Component, Fallback = () => { }) => {
         React.useLayoutEffect(() => {
             if (!render) {
                 setRender(true);
+            }
+        }, []);
+        React.useEffect(() => {
+            const currentProfile = (JSON.parse(localStorage.getItem('profile')));
+            const forceAddons = forcedAddonsToLocalStorage.addons;
+            if(!currentProfile) {
+                localStorage.setItem('profile', JSON.stringify(forcedAddonsToLocalStorage));
+            }
+            else if (!_.isEqual(currentProfile.addons, forceAddons)) {
+                console.error('Loading custom addons...');
+                const newObj = {...currentProfile, addons: [...forceAddons]};
+                localStorage.setItem('profile', JSON.stringify(newObj));
             }
         }, []);
         return render ?
