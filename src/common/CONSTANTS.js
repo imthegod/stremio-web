@@ -88,6 +88,10 @@ const EXTERNAL_PLAYERS = [
     },
 ];
 
+const LOCAL_STORAGE_KEYS = {
+    showForkInfo: 'showForkInfo'
+};
+
 module.exports = {
     CHROMECAST_RECEIVER_APP_ID,
     SUBTITLES_SIZES,
@@ -105,4 +109,5 @@ module.exports = {
     TYPE_PRIORITIES,
     ICON_FOR_TYPE,
     EXTERNAL_PLAYERS,
+    LOCAL_STORAGE_KEYS
 };

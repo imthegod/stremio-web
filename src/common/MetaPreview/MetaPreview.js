@@ -24,7 +24,7 @@ const ALLOWED_LINK_REDIRECTS = [
     routesRegexp.metadetails.regexp
 ];
 
-const MetaPreview = ({ className, compact, name, logo, background, runtime, releaseInfo, released, description, deepLinks, links, trailerStreams, inLibrary, toggleInLibrary }) => {
+const MetaPreview = ({ className, compact, name, logo, background, runtime, releaseInfo, released, description, deepLinks, links, trailerStreams, genres, tags }) => {
     const { t } = useTranslation();
     const [shareModalOpen, openShareModal, closeShareModal] = useBinaryState(false);
     const linksGroups = React.useMemo(() => {
@@ -107,7 +107,7 @@ const MetaPreview = ({ className, compact, name, logo, background, runtime, rele
                     :
                     null
             }
-            <div className={styles['meta-info-container']}>
+            <div className={`${styles['meta-info-container']} !flex-none`}>
                 {
                     typeof logo === 'string' && logo.length > 0 ?
                         <Image
@@ -159,8 +159,10 @@ const MetaPreview = ({ className, compact, name, logo, background, runtime, rele
                 }
                 {
                     compact && typeof description === 'string' && description.length > 0 ?
-                        <div className={styles['description-container']}>
-                            {description}
+                        <div className={`${styles['description-container']} !max-h-80 overflow-hidden`}>
+                            <p className="whitespace-pre-line break-words overflow-hidden max-h-full line-clamp-6">
+                                {description}
+                            </p>
                         </div>
                         :
                         null
@@ -195,15 +197,26 @@ const MetaPreview = ({ className, compact, name, logo, background, runtime, rele
             </div>
             <div className={styles['action-buttons-container']}>
                 {
-                    typeof toggleInLibrary === 'function' ?
-                        <ActionButton
-                            className={styles['action-button']}
-                            icon={inLibrary ? 'remove-from-library' : 'add-to-library'}
-                            label={inLibrary ? t('REMOVE_FROM_LIB') : t('ADD_TO_LIB')}
-                            tooltip={compact}
-                            tabIndex={compact ? -1 : 0}
-                            onClick={toggleInLibrary}
-                        />
+                    genres ?
+                        <div className='flex w-full flex-col  text-white'>
+                            <div className='text-lg font-semibold mb-2'>Genres</div>
+                            <div className='flex gap-1 flex-wrap text-sm'>
+                                {genres.slice(0, 4).map((genre, index) => (
+                                    <div className='px-4 py-2 rounded-md border border-white border-opacity-5 ' key={`${genre}-${index}`}>{genre}</div>
+                                ))}</div>
+                        </div>
+                        :
+                        null
+                }
+                {
+                    tags ?
+                        <div className='flex w-full flex-col pb-3 text-white'>
+                            <div className='text-lg font-semibold mb-2'>Tags</div>
+                            <div className='flex gap-1 flex-wrap text-sm'>
+                                {tags.slice(0, 4).map((tag, index) => (
+                                    <div className='px-4 py-2 rounded-md border border-white border-opacity-5 ' key={`${tag}-${index}`}>{tag}</div>
+                                ))}</div>
+                        </div>
                         :
                         null
                 }
@@ -286,8 +299,8 @@ MetaPreview.propTypes = {
         url: PropTypes.string
     })),
     trailerStreams: PropTypes.array,
-    inLibrary: PropTypes.bool,
-    toggleInLibrary: PropTypes.func
+    genres: PropTypes.array,
+    tags: PropTypes.array
 };
 
 module.exports = MetaPreview;

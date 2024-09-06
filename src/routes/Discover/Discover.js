@@ -25,6 +25,7 @@ const Discover = ({ urlParams, queryParams }) => {
             metasContainerRef.current.scrollTop = 0;
         }
     }, [discover.catalog]);
+
     const selectedMetaItem = React.useMemo(() => {
         return discover.catalog !== null &&
             discover.catalog.content.type === 'Ready' &&
@@ -33,6 +34,7 @@ const Discover = ({ urlParams, queryParams }) => {
             :
             null;
     }, [discover.catalog, selectedMetaItemIndex]);
+
     const addToLibrary = React.useCallback(() => {
         if (selectedMetaItem === null) {
             return;

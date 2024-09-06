@@ -57,8 +57,8 @@ const ModalDialog = ({ className, title, buttons, children, dataset, onCloseRequ
         };
     }, [routeFocused, dataset, onCloseRequest]);
     return (
-        <Modal ref={modalContainerRef} {...props} className={classnames(className, styles['modal-container'])} onMouseDown={onModalContainerMouseDown}>
-            <div className={styles['modal-dialog-container']} onMouseDown={onModalDialogContainerMouseDown}>
+        <Modal ref={modalContainerRef} {...props} className={classnames(className.root, styles['modal-container'])} onMouseDown={onModalContainerMouseDown}>
+            <div className={classnames(className.container, styles['modal-dialog-container'])} onMouseDown={onModalDialogContainerMouseDown}>
                 <div className={styles['modal-dialog-background']} style={{backgroundImage: `url('${background}')`}} />
                 <Button className={styles['close-button-container']} title={'Close'} onClick={closeButtonOnClick}>
                     <Icon className={styles['icon']} name={'close'} />

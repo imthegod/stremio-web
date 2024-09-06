@@ -213,19 +213,6 @@ const Board = () => {
         };
     }, [currentScrolledDay]);
 
-    // React.useEffect(() => {
-    //     const fetchData = async () => {
-    //         const startOfToday = new Date();
-    //         startOfToday.setHours(0, 0, 0, 0);
-    //         const startOfTodayEpochMilliseconds = startOfToday.getTime();
-    //         const allAnimeURL = 'https://animes-season-addon-git-main-imthegods-projects.vercel.app/catalog/series/latest_anime_seasons.json'
-    //         const response = await fetch('https://animes-season-addon-git-main-imthegods-projects.vercel.app/catalog/series/latest_anime_seasons.json');
-    //         const text = await response.json();
-    //         console.log(text);
-    //     };
-    //     fetchData();
-    // }, []);
-
     return (
         <div className={styles['board-container']}>
             <EventModal />

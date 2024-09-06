@@ -12,9 +12,10 @@ const SearchBar = require('./SearchBar');
 const NavMenu = require('./NavMenu');
 const styles = require('./styles');
 const { t } = require('i18next');
-const SiteInformationDialog = require('./dialog');
+const SiteInformationDialog = require('./SiteInformationDialog/SiteInformationDialog');
+const { LOCAL_STORAGE_KEYS } = require('../../../common/CONSTANTS');
 
-const HorizontalNavBar = React.memo(({ className, route, query, title, backButton, searchBar, addonsButton, fullscreenButton, navMenu, ...props }) => {
+const HorizontalNavBar = React.memo(({ className, route, query, title, backButton, searchBar, fullscreenButton, navMenu, ...props }) => {
     const backButtonOnClick = React.useCallback(() => {
         window.history.back();
     }, []);
@@ -26,11 +27,17 @@ const HorizontalNavBar = React.memo(({ className, route, query, title, backButto
             {children}
         </Button>
     ), []);
-
     const [routeState, setRouteState] = React.useState(route);
     React.useEffect(() => {
         setRouteState(route);
     }, [route]);
+    const [forkInfo, setForkInfo] = React.useState(false);
+    React.useEffect(() => {
+        const showForkInfo = localStorage.getItem(LOCAL_STORAGE_KEYS.showForkInfo);
+        if (showForkInfo !== 'false') {
+            setForkInfo(true);
+        }
+    }, []);
 
     return (
         <nav {...props} className={classnames(className, styles['horizontal-nav-bar-container'])}>
@@ -69,7 +76,12 @@ const HorizontalNavBar = React.memo(({ className, route, query, title, backButto
                     null
             }
             <div className={styles['buttons-container']}>
-                <SiteInformationDialog/>
+                {
+                    forkInfo ?
+                        <SiteInformationDialog setForkInfo={setForkInfo}/>
+                        :
+                        null
+                }
                 {
                     !isIOSPWA && fullscreenButton ?
                         <Button className={styles['button-container']} title={fullscreen ? t('EXIT_FULLSCREEN') : t('ENTER_FULLSCREEN')} tabIndex={-1} onClick={fullscreen ? exitFullscreen : requestFullscreen}>

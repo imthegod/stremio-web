@@ -9,6 +9,7 @@ const styles = require('./styles');
 const TABS = [
     { id: 'board', label: 'Board', icon: 'home', href: '#/' },
     { id: 'discover', label: 'Discover', icon: 'discover', href: '#/discover/https%3A%2F%2Fanime-kitsu.strem.fun%2Fmanifest.json/anime/kitsu-anime-trending?' },
+    { id: 'library', label: 'Library', icon: 'library', href: '#/library' },
 ];
 
 const MainNavBars = React.memo(({ className, route, query, children }) => {
@@ -20,7 +21,6 @@ const MainNavBars = React.memo(({ className, route, query, children }) => {
                 query={query}
                 backButton={false}
                 searchBar={true}
-                addonsButton={true}
                 fullscreenButton={true}
                 navMenu={true}
             />
